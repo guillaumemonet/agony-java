@@ -73,15 +73,53 @@ public final class DiskDownloader {
     }
 
     /**
+     * True when a folder holds the whole game: the three downloaded images, or
+     * at least three images of any name put there by hand.  A download cut
+     * short leaves fewer, and the next start fetches the rest.
+     */
+    public static boolean hasAllDisks(Path folder) {
+        if (folder == null || !Files.isDirectory(folder)) {
+            return false;
+        }
+        try (var list = Files.list(folder)) {
+            return list.filter(p -> p.getFileName().toString().toLowerCase().endsWith(".adf"))
+                    .count() >= DISKS.length;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
      * Downloads the disks that are missing from a folder.
      *
      * @return true when the three images are there afterwards
      */
     public static boolean download(Path folder) {
+        return download(folder, (disk, of, line) -> System.out.println(line));
+    }
+
+    /** Hears how a download goes, one line at a time. */
+    @FunctionalInterface
+    public interface Progress {
+        /**
+         * @param disk the disk being dealt with, from 1, or {@code of + 1} once done
+         * @param of   how many disks there are
+         * @param line what happens, in words
+         */
+        void report(int disk, int of, String line);
+    }
+
+    /**
+     * Downloads the disks that are missing from a folder, telling a listener
+     * how it goes.
+     *
+     * @return true when the three images are there afterwards
+     */
+    public static boolean download(Path folder, Progress progress) {
         try {
             Files.createDirectories(folder);
         } catch (IOException e) {
-            System.out.println("Cannot create " + folder + ": " + e.getMessage());
+            progress.report(1, DISKS.length, "Cannot create " + folder + ": " + e.getMessage());
             return false;
         }
         HttpClient http = HttpClient.newBuilder()
@@ -89,18 +127,19 @@ public final class DiskDownloader {
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
         boolean all = true;
-        for (Disk disk : DISKS) {
+        for (int i = 0; i < DISKS.length; i++) {
+            Disk disk = DISKS[i];
             Path target = folder.resolve(disk.file());
             if (Files.isRegularFile(target) && sha256(target).equals(disk.sha256())) {
                 continue;
             }
-            System.out.println("Downloading " + disk.file() + " ...");
+            progress.report(i + 1, DISKS.length, "Downloading " + disk.file() + " ...");
             try {
                 byte[] adf = fetch(http, disk);
                 String hash = sha256(adf);
                 if (!hash.equals(disk.sha256())) {
-                    System.out.println("  rejected: the image does not match the known dump ("
-                            + hash + ")");
+                    progress.report(i + 1, DISKS.length, "  rejected: the image does not match"
+                            + " the known dump (" + hash + ")");
                     all = false;
                     continue;
                 }
@@ -108,15 +147,16 @@ public final class DiskDownloader {
                 Files.write(part, adf);
                 Files.move(part, target, StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.ATOMIC_MOVE);
-                System.out.println("  ok");
+                progress.report(i + 1, DISKS.length, "  ok");
             } catch (IOException e) {
-                System.out.println("  failed: " + e.getMessage());
+                progress.report(i + 1, DISKS.length, "  failed: " + e.getMessage());
                 all = false;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }
         }
+        progress.report(DISKS.length + 1, DISKS.length, all ? "All disks are here." : "Some disks are missing.");
         return all;
     }
 

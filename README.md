@@ -58,8 +58,23 @@ Gradle (NetBeans and IntelliJ open the folder as a Gradle project):
 ./gradlew run --args="--level=2"
 ./gradlew run --args="--invincible --level=1"   # --level skips the title
 ./gradlew run --args="--no-title"
-./gradlew jar && java -jar build/libs/agony-java-1.0-SNAPSHOT.jar
+./gradlew jar && java -jar build/libs/agony-java-1.0.0.jar
 ```
+
+### Release
+
+`./gradlew release` packages the game with jpackage into
+`build/release/Agony-<version>-<os>-x64.zip`: the launcher (`Agony.exe` on
+Windows), the game and a Java runtime trimmed to the modules it uses, about
+26 MB, with no game data.  Unzip it anywhere and start `Agony`: on the first
+start a window shows the three disks being downloaded into
+`~/.agony-java/adf`, and the game opens once they are there and checked.
+`./gradlew jpackage -Ptype=msi` (or `exe`, `deb`, `dmg`…) builds an installer
+instead, with the tools jpackage needs for that type (WiX on Windows).
+
+The packaged game has no `../sources` beside it, so the two in-level modules
+kept only in `AgonyDemoDosBackup` (sea and forest) are not there; those two
+levels play the tune of their loading screen, which is on the disks.
 
 Plain JDK 17 or newer, without Gradle:
 
@@ -207,6 +222,9 @@ in `adf` here or `../adf` beside the project, then in `~/.agony-java/adf`.  When
 there are none, `data/original/DiskDownloader` fetches the three disks of the
 hard disk release from the Amiga Museum, one zip archive each, keeps the image
 inside and checks it against the SHA-256 of the known dump before using it.
+`core/DownloadWindow` shows that download in a window, since the packaged game
+has no console; if a disk cannot be fetched it says so and the game leaves, and
+the next start fetches the disks still missing.
 
 Two releases of the disks are known and both are read:
 

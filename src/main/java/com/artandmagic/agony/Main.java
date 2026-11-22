@@ -4,6 +4,7 @@ import com.artandmagic.agony.audio.ModPlayer;
 import com.artandmagic.agony.audio.Paula;
 import com.artandmagic.agony.audio.SoundFx;
 import com.artandmagic.agony.core.Display;
+import com.artandmagic.agony.core.DownloadWindow;
 import com.artandmagic.agony.core.Pacer;
 import com.artandmagic.agony.core.Screen;
 import com.artandmagic.agony.data.AssetLoader;
@@ -73,9 +74,10 @@ public final class Main {
             }
         }
         Path home = DiskDownloader.defaultFolder();
-        if (!DiskDownloader.hasDisks(home)) {
-            System.out.println("No Agony disk images found; fetching them into " + home);
-            DiskDownloader.download(home);
+        if (!DiskDownloader.hasAllDisks(home) && !DownloadWindow.download(home)) {
+            // Without the disks there is no game to play: the failure has been
+            // shown, so leave rather than open on a half read set of disks.
+            System.exit(1);
         }
         return home;
     }
