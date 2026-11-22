@@ -154,9 +154,11 @@ the twelve alien shots and the twenty four rain drops.
   encode, so the twelve hand written blit routines of `Ag_Object_.s` collapse
   into one clipped blit.
 * **Scrolling.** The original cycles three 44 byte screens and blits a character
-  column over sixteen frames. Here the same 352 pixel buffer is a ring and the
-  column that just left the screen is rebuilt in one go. The pristine copy used
-  to erase the aliens survives as `FrontScroll.scenery`.
+  column over sixteen frames, 40 bytes into the build screen (`Front_Table`),
+  just right of what the window shows: a level starts on an empty front
+  playfield and the map comes in from the right. Here the same 352 pixel buffer
+  is a ring and each column is built in one go at that same place. The
+  pristine copy used to erase the aliens survives as `FrontScroll.scenery`.
 * **Alien shot groups.** The original reads past the end of `AF_LFO` when more
   than nine shots pile up within ten lines of each other; the port clamps to the
   last counter instead.

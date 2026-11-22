@@ -14,10 +14,15 @@ import com.artandmagic.agony.data.LevelData;
  * column is blitted into the build screen over sixteen 25 Hz frames, two pixels
  * of fine scroll at a time, and the screens rotate once the column is complete.
  *
- * <p>This port keeps the same 352 pixel wide buffer but treats it as a ring:
- * the column that has just left the left edge is rebuilt in one go, which is
- * invisible to the player and removes the sixteen phase blit state machine.
- * The pristine copy survives as {@link #scenery}, the build screen as
+ * <p>This port keeps the same 352 pixel wide buffer but treats it as a ring,
+ * and builds a column in one go rather than over sixteen frames.  Where it
+ * goes is what {@code Front_Table} says: 40 bytes into the build screen, the
+ * 32 pixels just right of the 304 the window shows.  The level starts on an
+ * empty front playfield and the map comes in from the right, one column per
+ * character of scroll, so the scenery, the level script and the back scroll
+ * stay in step; the final monster of the sea, a breaking wave in the last
+ * columns of the map, is on screen when the script brings it in.  The
+ * pristine copy survives as {@link #scenery}, the build screen as
  * {@link #work}.
  */
 public final class FrontScroll {
@@ -48,11 +53,16 @@ public final class FrontScroll {
         this.state = state;
     }
 
-    /** Fills the whole ring before the level starts. */
+    /** Ring column of the 40th byte of the build screen, {@code Front_Table}. */
+    private static final int ENTRY_COLUMN = 40 * 8 / CHAR_W;
+
+    /**
+     * Sets the level up: the front playfield starts empty, the first column
+     * of the map is built just right of the window, and the first palette
+     * step is in.
+     */
     public void prime(Palette palette) {
-        for (int c = 0; c < RING_W / CHAR_W; c++) {
-            installColumn(c);
-        }
+        installColumn(ENTRY_COLUMN);
         applyPalette(palette);
     }
 
@@ -98,13 +108,13 @@ public final class FrontScroll {
         }
         state.frontPhase = 0;
 
-        // The column that has just left the left edge is the one rebuilt: the
-        // window is 304 pixels of a 352 pixel ring, so it comes back in on the
-        // right sixteen video frames later, which is when the original has
-        // finished blitting it.
-        int leaving = (state.frontScroll / CHAR_W) % (RING_W / CHAR_W);
+        // The screens move on by a character, and the next column of the map
+        // is built 40 bytes into the new build screen.  The window does not
+        // reach it before the middle of the column's sixteen frames, by which
+        // time the original has blitted its top half; the port lays it all at
+        // once.
         state.frontScroll = (state.frontScroll + CHAR_W) % RING_W;
-        installColumn(leaving);
+        installColumn((state.frontScroll / CHAR_W + ENTRY_COLUMN) % (RING_W / CHAR_W));
     }
 
     /**
