@@ -91,8 +91,10 @@ final class Ghost implements Routine {
         if (mode == 2) {
             bank.count = 2;
             ghost.x -= 2;
+            // eor #1,R_S_Anim_Delay / bne .no: the shape moves on when the
+            // flip leaves zero, every other frame starting with the second.
             vars[ANIM_DELAY] ^= 1;
-            if (vars[ANIM_DELAY] == 0) {
+            if (vars[ANIM_DELAY] != 0) {
                 return true;
             }
             int step = vars[ANIM_STEP];
