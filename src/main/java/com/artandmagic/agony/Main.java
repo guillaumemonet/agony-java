@@ -13,6 +13,7 @@ import com.artandmagic.agony.data.HiScores;
 import com.artandmagic.agony.data.LevelData;
 import com.artandmagic.agony.data.PlaceholderAssets;
 import com.artandmagic.agony.data.original.DiskDownloader;
+import com.artandmagic.agony.data.original.IntroData;
 import com.artandmagic.agony.data.original.Disks;
 import com.artandmagic.agony.data.original.LoadingScreens;
 import com.artandmagic.agony.data.original.OriginalAssets;
@@ -22,6 +23,7 @@ import com.artandmagic.agony.data.original.TitleData;
 import com.artandmagic.agony.game.AgonyGame;
 import com.artandmagic.agony.input.Joystick;
 import com.artandmagic.agony.screens.EndingScreen;
+import com.artandmagic.agony.screens.IntroScreen;
 import com.artandmagic.agony.screens.LoadingScreen;
 import com.artandmagic.agony.screens.TitleScreen;
 
@@ -108,6 +110,7 @@ public final class Main {
         Map<String, LoadingScreens.Screen> loading = LoadingScreens.scan(adf);
         TitleData.Found title = TitleData.scan(adf);
         TitleData.Found ending = TitleData.scanEnding(Disks.read(adf));
+        IntroData intro = skipTitle ? null : IntroData.scan(Disks.read(adf));
         HiScores hiscores = new HiScores(title != null ? title.hiscores() : null,
                 HiScores.defaultFile());
         Map<String, OriginalMusic.Module> modules = OriginalMusic.scan(adf);
@@ -142,6 +145,22 @@ public final class Main {
         Screen screen = new Screen();
         Display display = new Display(screen.frame(), joystick, "Agony");
         Pacer pacer = new Pacer();
+
+        if (intro != null) {
+            // The booter loads the presentation first; fire cuts it short.
+            music.stop();
+            IntroScreen presentation = new IntroScreen(intro, paula);
+            pacer.reset();
+            while (presentation.update(joystick)) {
+                display.present(presentation.frame(), presentation.width(), presentation.height());
+                if (!pacer.waitFrame()) {
+                    presentation.finish();
+                    paula.close();
+                    return;
+                }
+            }
+            presentation.finish();
+        }
 
         int lastScore = 0;
         session:

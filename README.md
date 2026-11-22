@@ -315,7 +315,7 @@ and every level loads the title, `Agony.07`, when the last life is gone.  `Main`
 follows it: the title, then each level behind its loading screen, carrying the
 score, the lives, the weapon, the axes and the spells across, the ending after
 the sixth, and the title again, which asks for initials when the score gets into
-the table.  The intro, `Agony.01`, is not decoded yet.
+the table.  The presentation, `Agony.01`, plays once before the first title.
 
 ### How the original loads anything
 
@@ -364,6 +364,15 @@ Nothing is keyed on a file name or an offset.
   `~/.agony-java/hiscores.bin`; the disk images are never written to.
 * **Ending** (`screens/EndingScreen`): the same engine, ten pages, the end of
   the story and the greetings.
+* **Presentation** (`data/original/IntroData`, `screens/IntroScreen`): six
+  hires interlace pictures (the hi-fi hint, the Psygnosis owl lit by a sweep of
+  colour, "and", Art & Magic, "Present", the Agony logo) with sampled sound
+  played straight through the audio registers.  The program is straight line
+  code, read instruction by instruction into a script of pictures, fades, waits
+  and sounds; the fades and the volume envelopes of its vertical blank handler
+  are reproduced on the same timings.  The long animated intro of the original
+  release (`FILE_0_3`, `System:ag/intro` in `load_label.s`) is on neither of the
+  known dumps: the presentation goes straight to the title.
 
 ### Notes on the original formats
 
