@@ -10,6 +10,36 @@ game variables, the same collision model, the same level script format. What the
 Amiga did with the copper, the blitter and the sprite DMA is reproduced in
 software, in classes that carry the name of the assembly block they come from.
 
+## Screenshots
+
+Rendered by the port from the original disks (`tools/Screenshots`).
+
+| Presentation | | |
+| --- | --- | --- |
+| ![Psygnosis](docs/screenshots/intro-psygnosis.png) | ![Art & Magic](docs/screenshots/intro-art-and-magic.png) | ![Agony](docs/screenshots/intro-agony.png) |
+
+| Title | Hiscores | Loading |
+| --- | --- | --- |
+| ![Credits](docs/screenshots/title-credits.png) | ![Hiscores](docs/screenshots/title-hiscores.png) | ![Loading the forest](docs/screenshots/loading-forest.png) |
+
+| Level | In play | Final monster |
+| --- | --- | --- |
+| 1, the sea | ![](docs/screenshots/level1.png) | ![](docs/screenshots/level1-boss.png) |
+| 2, the forest | ![](docs/screenshots/level2.png) | ![](docs/screenshots/level2-boss.png) |
+| 3, the marshes | ![](docs/screenshots/level3.png) | ![](docs/screenshots/level3-boss.png) |
+| 4, the mountains | ![](docs/screenshots/level4.png) | ![](docs/screenshots/level4-boss.png) |
+| 5, the highlands | ![](docs/screenshots/level5.png) | ![](docs/screenshots/level5-boss.png) |
+| 6, the fire | ![](docs/screenshots/level6.png) | ![](docs/screenshots/level6-boss.png) |
+
+![The end](docs/screenshots/ending.png)
+
+To render them again after a change:
+
+```
+./gradlew classes
+java -cp build/classes/java/main com.artandmagic.agony.tools.Screenshots docs/screenshots
+```
+
 ## Build and run
 
 The repository sits beside the original material it reads:
