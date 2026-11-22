@@ -3,6 +3,7 @@ build/
 target/
 *.png
 !src/**/*.png
+!docs/screenshots/*.png
 .idea/
 *.iml
 nbproject/private/
