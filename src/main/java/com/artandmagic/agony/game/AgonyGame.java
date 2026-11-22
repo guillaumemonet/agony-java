@@ -222,6 +222,11 @@ public final class AgonyGame {
      * delay once the scenery is over and nothing is left on screen.
      */
     private void endOfMap() {
+        if (level.routineEndsLevel) {
+            // The script still has its final monster to bring in over the
+            // stopped scenery, and that routine ends the level itself.
+            return;
+        }
         if (!state.prgPause || state.quitDelay != 0 || state.cleanUp || state.die) {
             return;
         }
