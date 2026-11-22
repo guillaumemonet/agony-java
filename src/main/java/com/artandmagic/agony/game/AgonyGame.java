@@ -225,6 +225,11 @@ public final class AgonyGame {
         if (!state.prgPause || state.quitDelay != 0 || state.cleanUp || state.die) {
             return;
         }
+        // A level routine the script has yet to start, the end of level one
+        // among them, is still to come: the level is not over.
+        if (tracks.routinePending()) {
+            return;
+        }
         for (AlienBank bank : tracks.banks) {
             if (!bank.isFree() && bank.count > 0) {
                 return;
