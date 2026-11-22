@@ -7,3 +7,4 @@ target/
 *.iml
 nbproject/private/
 .nb-gradle/
+.claude/
