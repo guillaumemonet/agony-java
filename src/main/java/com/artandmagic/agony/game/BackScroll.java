@@ -53,6 +53,13 @@ public final class BackScroll {
     private final int[] layerDelay = new int[3];
     /** Index of the next pattern to feed into layer 2, {@code Pat_Ptr}. */
     private int nextPattern;
+    /**
+     * The pattern whose colours are in the copper list.  The original loads
+     * the colours of pattern 1 when the level starts and those of each new
+     * pattern as it comes in at the top, not those of the oldest one still
+     * on screen.
+     */
+    private int colourPattern;
     /** True when the level carries the original back scroll tables. */
     private final boolean original;
 
@@ -93,6 +100,7 @@ public final class BackScroll {
                 layerFrame[i] = frameOf(i);
             }
             nextPattern = 3;
+            colourPattern = 1;
             if (level.skyBitmap != null) {
                 System.arraycopy(level.skyBitmap, 0, sky.pixels, 0,
                         Math.min(level.skyBitmap.length, sky.pixels.length));
@@ -230,6 +238,9 @@ public final class BackScroll {
             layerPattern[2] = level.backPatterns.length - 1;
         } else {
             layerPattern[2] = nextPattern++;
+            // The colours of the pattern coming in go straight into the
+            // copper list; past the end of the list they are left alone.
+            colourPattern = layerPattern[2];
         }
         layerStep[2] = 0;
         layerDelay[2] = 1;
@@ -379,7 +390,7 @@ public final class BackScroll {
     /** Loads the colours of the current pattern into the six bands. */
     public void applyPalette(Palette palette) {
         LevelData.BackPattern pat = original
-                ? level.backPatterns[Math.floorMod(layerPattern[0], level.backPatterns.length)]
+                ? level.backPatterns[Math.floorMod(colourPattern, level.backPatterns.length)]
                 : pattern();
         if (pat == null) {
             return;

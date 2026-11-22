@@ -80,11 +80,11 @@ To grab a frame without opening a window — useful on a build machine:
 | Key | Action |
 | --- | --- |
 | Arrows | Fly |
-| Ctrl, Alt or Enter | Fire; hold for 30 frames to open the spell menu |
+| Ctrl, Alt or Enter | Fire (holding it opens the spell menu only once M has turned that on) |
 | Space | Spell menu (key `$40` of the original) |
 | P | Pause (key `$19`) |
 | Escape | Abort the level (key `$45`) |
-| M | Toggle whether holding fire opens the menu (key `$37`) |
+| M | Toggle whether holding fire for 30 frames opens the menu too, off at start (key `$37`) |
 | F1..F4 | The debug keys of `Keyboard_Int`: lower axe, upper axe and all spells, next weapon, everything |
 | F5 | Invincibility on or off (port only, also `--invincible` on the command line) |
 

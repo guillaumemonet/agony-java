@@ -138,7 +138,7 @@ public final class Main {
                     + (title != null ? "the title screen" : "no title screen") + " and "
                     + modules.size() + " modules on the disks");
         }
-        System.out.println("Arrows to fly, Ctrl to fire, hold fire or press Space "
+        System.out.println("Arrows to fly, Ctrl to fire, Space "
                 + "for the spell menu, P pauses, Escape aborts the level, F5 toggles invincibility.");
 
         Joystick joystick = new Joystick();

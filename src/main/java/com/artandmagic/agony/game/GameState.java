@@ -128,8 +128,13 @@ public final class GameState {
     public boolean arowDown;
     /** Frames the fire button has been held, used to open the menu. */
     public int fireCount;
-    /** When false the menu can only be opened with the menu key. */
-    public boolean menuMode = true;
+    /**
+     * {@code Menu_Mode}: when true, holding fire for thirty frames opens the
+     * spell menu as well as the menu key.  The port starts with it off, so the
+     * fire button only fires and the space bar opens the menu; M toggles it, as
+     * key $37 does in the original.
+     */
+    public boolean menuMode = false;
 
     /** Spell working variables. */
     public int rotStep;
