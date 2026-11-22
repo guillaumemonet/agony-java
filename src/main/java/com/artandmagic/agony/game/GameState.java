@@ -218,6 +218,20 @@ public final class GameState {
     public final java.util.List<int[]> pendingWaves = new java.util.ArrayList<>();
 
     /**
+     * Level routines a routine started itself, as the final monster of the
+     * highlands does with its slaves: it walks {@code Rout_Struct} for a free
+     * slot and {@code AWO_Struct} for a free bank, and fills both in by hand.
+     * The routine manager installs each request as soon as the routine that
+     * made it returns, so a slot further down the table still runs in the same
+     * frame, exactly as in the original.
+     */
+    public final java.util.List<PendingRoutine> pendingRoutines = new java.util.ArrayList<>();
+
+    /** A routine to start, and the parameter words it reads. */
+    public record PendingRoutine(com.artandmagic.agony.data.Routine routine, int[] params) {
+    }
+
+    /**
      * {@code Sound0_Req} and {@code Sound0_Vol_Req}: the sound a level routine
      * asks for before it calls {@code Sound_Start}, -1 when none.  The main
      * loop hands it to the sound driver once the routines have run.
