@@ -363,7 +363,14 @@ public final class TrackManager {
             if (routines[i] == null) {
                 continue;
             }
-            if (!routines[i].update(state, routineBanks[i], routineVars[i], routineParams[i])) {
+            boolean alive = routines[i].update(state, routineBanks[i], routineVars[i], routineParams[i]);
+            // A routine that started another took its slot while it ran, before
+            // its own slot could be given back.
+            for (GameState.PendingRoutine request : state.pendingRoutines) {
+                startRoutine(request.routine(), request.params());
+            }
+            state.pendingRoutines.clear();
+            if (!alive) {
                 routineBanks[i].release();
                 routines[i] = null;
                 routineBanks[i] = null;
