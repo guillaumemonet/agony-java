@@ -108,6 +108,23 @@ public final class TrackManager {
         }
     }
 
+    /**
+     * True while the script still holds a level routine it has not started.
+     *
+     * <p>On the fire level the scenery runs out a little before the script
+     * reaches Mentor, so the screen is briefly empty with the end of level
+     * routine still to come; the original simply waits for it.
+     */
+    public boolean routinePending() {
+        var entries = level.startList.entries();
+        for (int i = state.startListIndex; i < entries.size(); i++) {
+            if (entries.get(i).routine != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void startWave(AttackWave wave) {
         startWave(wave, wave.startX, wave.startY);
     }
