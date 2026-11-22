@@ -109,6 +109,12 @@ public final class LevelData {
     /** The level script ({@code Start_list}). */
     public StartList startList = new StartList();
 
+    /**
+     * True when a level routine ends the level ({@link RoutineLibrary#endsLevel}),
+     * so the end of the scenery does not.
+     */
+    public boolean routineEndsLevel;
+
     /** True on the first level, the only one with rain. */
     public boolean rain;
 
