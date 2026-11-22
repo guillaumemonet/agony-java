@@ -2,7 +2,6 @@ package com.artandmagic.agony.game.routines;
 
 import com.artandmagic.agony.data.Routine;
 import com.artandmagic.agony.data.RoutineLibrary;
-import com.artandmagic.agony.audio.SoundFx;
 import com.artandmagic.agony.data.original.AgonyBinary;
 import com.artandmagic.agony.game.GameState;
 
@@ -33,12 +32,8 @@ public final class SeaRoutines implements RoutineLibrary {
     private final FinalMonster boss;
 
     public SeaRoutines(AgonyBinary bin) {
-        this(bin, null);
-    }
-
-    public SeaRoutines(AgonyBinary bin, SoundFx sound) {
         transporter = new Transporter(bin);
-        boss = new FinalMonster(bin, sound);
+        boss = new FinalMonster(bin);
         byAddress.put(0x04efc8, transporter);
         byAddress.put(0x04fa3a, boss);
         byAddress.put(0x04f19a, new GroundPlant(bin));

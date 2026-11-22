@@ -148,6 +148,10 @@ public final class AgonyGame {
             if (state.curentSpell != 2) {
                 tracks.updateRoutines();
             }
+            if (state.soundRequest >= 0) {
+                sound.request(state.soundRequest, state.soundVolume);
+                state.soundRequest = -1;
+            }
         }
 
         status.update();

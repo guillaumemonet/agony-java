@@ -1,6 +1,5 @@
 package com.artandmagic.agony.game.routines;
 
-import com.artandmagic.agony.audio.SoundFx;
 import com.artandmagic.agony.data.Routine;
 import com.artandmagic.agony.data.original.AgonyBinary;
 import com.artandmagic.agony.game.Alien;
@@ -42,13 +41,11 @@ final class FinalMonster implements Routine {
     private final int burst2 = 0x60a;
     private final int burst3 = 0x640;
 
-    private final SoundFx sound;
     private int wave1 = -1;
     private int wave2 = -1;
     private int wave3 = -1;
 
-    FinalMonster(AgonyBinary bin, SoundFx sound) {
-        this.sound = sound;
+    FinalMonster(AgonyBinary bin) {
         flash = SeaRoutines.palette(bin, 0x04f9fe);
         normal = SeaRoutines.palette(bin, 0x04fa12);
         explo = SeaRoutines.palette(bin, 0x04fa26);
@@ -138,22 +135,22 @@ final class FinalMonster implements Routine {
             case 17 -> {
                 state.routPalette = flash;
                 state.refreshPal = GameState.PAL_ASKED;
-                bang();
+                bang(state);
             }
             case 19 -> state.clearScenery = true;
             case 21 -> {
                 burst(boss, 256 + 250, 256 + 80, burst1);
                 state.routPalette = explo;
                 state.refreshPal = GameState.PAL_ASKED;
-                bang();
+                bang(state);
             }
             case 35 -> {
                 burst(boss, 256 + 200, 256 + 110, burst2);
-                bang();
+                bang(state);
             }
             case 52 -> {
                 burst(boss, 256 + 250, 256 + 120, burst3);
-                bang();
+                bang(state);
                 // This is what ends the level and brings the next one in.
                 state.quitDelay = 25;
                 state.cleanUp = true;
@@ -173,9 +170,8 @@ final class FinalMonster implements Routine {
         alien.fireRateDyn = 0;
     }
 
-    private void bang() {
-        if (sound != null) {
-            sound.request(1, 63);
-        }
+    /** Sound0_Req 1 at volume 63, then Sound_Start. */
+    private void bang(GameState state) {
+        state.requestSound(1, 63);
     }
 }

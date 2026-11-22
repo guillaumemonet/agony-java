@@ -216,6 +216,20 @@ public final class GameState {
      * follower has already passed for this frame.
      */
     public final java.util.List<int[]> pendingWaves = new java.util.ArrayList<>();
+
+    /**
+     * {@code Sound0_Req} and {@code Sound0_Vol_Req}: the sound a level routine
+     * asks for before it calls {@code Sound_Start}, -1 when none.  The main
+     * loop hands it to the sound driver once the routines have run.
+     */
+    public int soundRequest = -1;
+    public int soundVolume;
+
+    /** Asks for a sound the way the level routines do. */
+    public void requestSound(int number, int volume) {
+        soundRequest = number;
+        soundVolume = volume;
+    }
     /**
      * Raised by the end of level routine: it wipes the three front screens and
      * frees every track, so nothing is left but its own explosion.

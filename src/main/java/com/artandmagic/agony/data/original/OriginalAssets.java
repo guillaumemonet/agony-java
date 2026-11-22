@@ -2,7 +2,7 @@ package com.artandmagic.agony.data.original;
 
 import com.artandmagic.agony.data.GameAssets;
 import com.artandmagic.agony.data.RoutineLibrary;
-import com.artandmagic.agony.game.routines.SeaRoutines;
+import com.artandmagic.agony.game.routines.Routines;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -59,8 +59,7 @@ public final class OriginalAssets {
      * @param fallback generated artwork, used for anything not converted
      */
     public static OriginalLevel.Result convert(Found found, GameAssets fallback) {
-        RoutineLibrary routines = found.level() == 1
-                ? new SeaRoutines(found.binary()) : RoutineLibrary.NONE;
+        RoutineLibrary routines = Routines.forLevel(found.level(), found.binary());
         return OriginalLevel.convert(found.binary(), fallback, routines);
     }
 }
