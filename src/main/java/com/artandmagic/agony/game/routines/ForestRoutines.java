@@ -67,12 +67,6 @@ public final class ForestRoutines implements RoutineLibrary {
         boss.bind(indexByAddress);
     }
 
-    /** {@code R_Final} sets {@code Quit_Delay}: the boss ends the forest. */
-    @Override
-    public boolean endsLevel() {
-        return true;
-    }
-
     /**
      * The close of every routine of this level:
      * <pre>

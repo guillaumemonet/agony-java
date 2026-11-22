@@ -138,14 +138,28 @@ the twelve alien shots and the twenty four rain drops.
   (`TrackManager.updateRoutines`, `data/Routine`), and the twelve routines of
   the first level are ported from `../sources/AgonyDosBoot/Ag_Game_LMER.s` into
   `game/routines` (`SeaRoutines`): all twenty five `Start_C` calls of the level
-  one script resolve. The other five levels do have their source in
-  `../sources/AgonyDosBoot` (`Ag_Game_LFORET.s`, `AG_GAME_LMARAIS.S`,
-  `AG_GAME_LMONTAGNES.S`, `Ag_Game_LPLATEAUX.s`, `Ag_Game_LFEUX.s`), but it is
-  not ported yet, so their calls fall through and their waves play on their
-  own — bosses included, which is why levels two to six have none.
-* **End of level.** The first level ends the way the original does: the final
-  monster sets `Quit_Delay` itself once its four explosions have gone off. The
-  levels with no routines end when the scenery runs out instead.
+  one script resolve.  The five other levels are ported the same way from
+  their own source, `Ag_Game_LFORET.s`, `AG_GAME_LMARAIS.S`,
+  `AG_GAME_LMONTAGNES.S`, `Ag_Game_LPLATEAUX.s` and `Ag_Game_LFEUX.s`, into
+  `ForestRoutines`, `MarshRoutines`, `MountainRoutines`, `HighlandRoutines` and
+  `FireRoutines`; `Routines.forLevel` picks the library of a level.  A routine
+  of the same name is not the same code from one level to the next (the ghost
+  takes a palette in the sea and not in the forest, the guided missile flies
+  three pixels a frame in the sea and two elsewhere), so each level has its own
+  classes.  The compiled overlay is what the game runs and wins where it parts
+  from the source file: the forest boss fires every twenty frames, not thirty,
+  and sets `Quit_Delay` at its first explosion.  `tools/LevelProbe` lists the
+  `Start_C` calls of a level and plays it headless to check them.
+* **Bugs kept.** Where the original routines misbehave the port does too: the
+  flame column writes its four phases to absolute addresses 2 and 6 instead of
+  its variables, so the flames flicker in step; the tongue of the marsh boss
+  counts its delay in the word at absolute address 2, taken to start at zero.
+* **End of level.** Every level ends the way the original does: its final
+  monster sets `Quit_Delay` once its explosions have gone off.  In the forest
+  and the fire the scenery runs out a few lines before the script brings the
+  boss in, so the port's own fallback, which ends a level once the scenery is
+  over and the screen empty, waits for every routine of the script to have
+  started.
 
 ## About the data
 
@@ -330,18 +344,9 @@ release: it writes `#id_image` into `id_clp`, the pointer of its own copper list
 and patches the disk digit into the bitmap from a small charset kept at
 `id_image+180`.  Nothing decodes or converts anything; the blob is the screen.
 
-Three pieces of the flow are still missing from the port, and the port says
+One piece of the flow is still missing from the release, and the port says
 so rather than pretending otherwise:
 
-* **The level routines** of levels two to six.  `AgonyDosBoot` carries the
-  script and the routines of every level, `Ag_Game_LMER.s` for the first and
-  one `Ag_Game_*.s` for each of the five others.  Only the first is ported; the
-  `Start_C` calls of the other five find nothing and the slot stays free.
-* **What ends those levels.** In the original the end of level routine sets
-  `Quit_Delay` itself, which is what the ported final monster of level one now
-  does.  Without a routine the port leaves the level once the scenery has run
-  out, which is the `Prg_Pause` the front and back scrolls raise from the
-  sources, and nothing is left on screen.
 * **`SetFade`** lives in `WORK:Global` and is not in the release; the port ramps
   the frame down over the same delay the original waits.
 

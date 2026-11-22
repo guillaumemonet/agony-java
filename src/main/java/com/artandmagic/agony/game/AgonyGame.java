@@ -217,16 +217,14 @@ public final class AgonyGame {
      * <p>{@code Prg_Pause} is raised by the front scroll when the map ends and
      * by the back scroll when the pattern list does, both straight from the
      * sources.  What the original does next is run the end of level routine of
-     * {@code Ag_Game_*.s}, which sets {@code Quit_Delay} itself; that routine is
-     * 68000 code and is not in the source release, so the port sets the same
-     * delay once the scenery is over and nothing is left on screen.
+     * {@code Ag_Game_*.s}, which sets {@code Quit_Delay} itself.  In the forest
+     * and the fire the scenery runs out a few lines before the script brings
+     * that routine in, so the port waits for every routine of the script to
+     * have started; it only ends the level itself when nothing is left to come
+     * and nothing is left on screen, which a level whose final monster does its
+     * job never reaches.
      */
     private void endOfMap() {
-        if (level.routineEndsLevel) {
-            // The script still has its final monster to bring in over the
-            // stopped scenery, and that routine ends the level itself.
-            return;
-        }
         if (!state.prgPause || state.quitDelay != 0 || state.cleanUp || state.die) {
             return;
         }

@@ -104,11 +104,6 @@ public final class LevelProbe {
             public void bindWaves(Map<Integer, Integer> indexByAddress) {
                 real.bindWaves(indexByAddress);
             }
-
-            @Override
-            public boolean endsLevel() {
-                return real.endsLevel();
-            }
         };
         OriginalLevel.Result result = OriginalLevel.convert(found.binary(),
                 PlaceholderAssets.create(), spy);

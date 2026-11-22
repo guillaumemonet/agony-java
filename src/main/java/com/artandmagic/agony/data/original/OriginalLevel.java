@@ -516,7 +516,6 @@ public final class OriginalLevel {
             routineWaves.put(address, index);
         }
         routines.bindWaves(routineWaves);
-        level.routineEndsLevel = routines.endsLevel();
 
         level.objects = objects;
         level.animations = animations;

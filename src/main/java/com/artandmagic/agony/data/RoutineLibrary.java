@@ -30,16 +30,6 @@ public interface RoutineLibrary {
     default void bindWaves(java.util.Map<Integer, Integer> indexByAddress) {
     }
 
-    /**
-     * True when a routine of the level ends it, as the final monster does by
-     * setting {@code Quit_Delay} itself.  The port then leaves the level to
-     * that routine and does not end it on its own once the scenery has run
-     * out, which in such a level happens before the boss comes in.
-     */
-    default boolean endsLevel() {
-        return false;
-    }
-
     /** A library that knows nothing, for levels whose routines are not ported. */
     RoutineLibrary NONE = address -> null;
 }
