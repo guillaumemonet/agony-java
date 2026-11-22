@@ -126,16 +126,13 @@ public final class OriginalMusic {
     };
 
     /**
-     * The music for a level: what plays during the level if it is there, the
-     * tune of its loading screen otherwise, and the intro as a last resort.
+     * The tune of a level's loading screen, and the intro as a last resort.
+     * The level itself plays the music of its overlay ({@link LevelMusic}).
      */
-    public static Module forLevel(Map<String, Module> modules, int level) {
+    public static Module forLoading(Map<String, Module> modules, int level) {
         if (level >= 1 && level < LEVEL_NAMES.length) {
             String name = LEVEL_NAMES[level];
-            Module m = modules.get("level_" + name);
-            if (m == null) {
-                m = modules.get("loading_" + name);
-            }
+            Module m = modules.get("loading_" + name);
             if (m == null && level == 4) {
                 // The disk names this one differently from the rest.
                 m = modules.get("mod.loading_mountain");

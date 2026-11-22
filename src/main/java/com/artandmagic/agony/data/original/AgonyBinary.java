@@ -60,6 +60,11 @@ public final class AgonyBinary {
 
     // ------------------------------------------------------------- accessors
 
+    /** The whole overlay, as loaded at {@link #BASE}. */
+    public byte[] data() {
+        return data;
+    }
+
     public boolean has(String label) {
         return addr.containsKey(label);
     }

@@ -3,6 +3,7 @@ package com.artandmagic.agony;
 import com.artandmagic.agony.audio.ModPlayer;
 import com.artandmagic.agony.audio.Paula;
 import com.artandmagic.agony.audio.SoundFx;
+import com.artandmagic.agony.audio.TelPlayer;
 import com.artandmagic.agony.core.Display;
 import com.artandmagic.agony.core.DownloadWindow;
 import com.artandmagic.agony.core.Pacer;
@@ -14,6 +15,7 @@ import com.artandmagic.agony.data.HiScores;
 import com.artandmagic.agony.data.LevelData;
 import com.artandmagic.agony.data.PlaceholderAssets;
 import com.artandmagic.agony.data.original.DiskDownloader;
+import com.artandmagic.agony.data.original.LevelMusic;
 import com.artandmagic.agony.data.original.IntroData;
 import com.artandmagic.agony.data.original.Disks;
 import com.artandmagic.agony.data.original.LoadingScreens;
@@ -83,7 +85,7 @@ public final class Main {
     }
 
     /** Everything one level needs. */
-    private record Stage(LevelData level, GameAssets assets, String tune) {
+    private record Stage(LevelData level, GameAssets assets, String tune, LevelMusic song) {
     }
 
     public static void main(String[] args) {
@@ -116,18 +118,18 @@ public final class Main {
         HiScores hiscores = new HiScores(title != null ? title.hiscores() : null,
                 HiScores.defaultFile());
         Map<String, OriginalMusic.Module> modules = OriginalMusic.scan(adf);
-        // Loose modules beside the project carry the in game music, which this
-        // release of the disks does not keep in its level overlays.
-        for (Path folder : new Path[]{Path.of("music"), Path.of("..", "music"),
-                Path.of("..", "sources", "AgonyDemoDosBackup")}) {
-            OriginalMusic.addFolder(modules, folder);
-        }
 
         Paula paula = new Paula();
         GameAssets probe = PlaceholderAssets.create();
         SoundFx sound = new SoundFx(paula, probe.soundPriority);
         ModPlayer music = new ModPlayer(paula);
-        paula.setVerticalBlank(music::play);
+        // The programs between levels play modules; the levels play the
+        // music driver compiled into their overlay.
+        TelPlayer levelMusic = new TelPlayer(paula);
+        paula.setVerticalBlank(() -> {
+            music.play();
+            levelMusic.play();
+        });
         paula.start();
 
         System.out.println("Agony (Art & Magic, 1992) - Java port");
@@ -180,6 +182,7 @@ public final class Main {
             if (!showLoading(current, levels, loading, display, joystick, pacer)) {
                 break;
             }
+            begin(stage, music, levelMusic);
             AgonyGame game = new AgonyGame(stage.level(), stage.assets(), joystick, sound, screen);
             if (invincible) {
                 game.setInvincible(true);
@@ -192,6 +195,9 @@ public final class Main {
                 display.present();
 
                 if (game.levelComplete()) {
+                    if (!fadeOut(levelMusic, display, pacer)) {
+                        break session;
+                    }
                     if (game.gameOver()) {
                         // Every level loads the title program when the last
                         // life is gone; it asks for initials if the score
@@ -226,6 +232,7 @@ public final class Main {
                     if (!showLoading(current, levels, loading, display, joystick, pacer)) {
                         break session;
                     }
+                    begin(stage, music, levelMusic);
                     game = new AgonyGame(stage.level(), stage.assets(), joystick, sound, screen);
                     game.inherit(score, lives, weapon, axeUp, axeDown, spells);
                     if (keepInvincible) {
@@ -277,6 +284,38 @@ public final class Main {
                 return false;
             }
         }
+        return true;
+    }
+
+    /**
+     * Starts the music of a level once its loading screen is gone: the driver
+     * of its overlay takes over from the loading tune.
+     */
+    private static void begin(Stage stage, ModPlayer music, TelPlayer levelMusic) {
+        if (stage.song() != null) {
+            music.stop();
+            levelMusic.start(stage.song());
+        }
+    }
+
+    /**
+     * The end of a level, game over or not: {@code Exit} fades the four voices
+     * at a speed of 90 and waits fifty frames before it leaves.
+     *
+     * @return false when the loop was interrupted
+     */
+    private static boolean fadeOut(TelPlayer levelMusic, Display display, Pacer pacer) {
+        if (!levelMusic.active()) {
+            return true;
+        }
+        levelMusic.fade(90);
+        for (int i = 0; i < 50; i++) {
+            display.present();
+            if (!pacer.waitFrame()) {
+                return false;
+            }
+        }
+        levelMusic.stop();
         return true;
     }
 
@@ -341,15 +380,26 @@ public final class Main {
             loader.loadSounds(sound);
         }
 
+        // The loading screen plays its module; the level, its own driver.
+        LevelMusic song = null;
+        for (OriginalAssets.Found found : levels) {
+            if (found.level() == number) {
+                song = LevelMusic.find(found.binary().data());
+            }
+        }
         String tune = null;
-        OriginalMusic.Module module = OriginalMusic.forLevel(modules, number);
+        OriginalMusic.Module module = OriginalMusic.forLoading(modules, number);
         if (module != null && music.load(module.data())) {
             music.init();
             tune = module.name();
         } else if (!loader.loadMusic(music)) {
             music.stop();
         }
-        return new Stage(level, assets, tune);
+        if (song != null) {
+            tune = (tune != null ? tune + " while loading, then " : "")
+                    + "the level driver (" + song.samples.size() + " instruments)";
+        }
+        return new Stage(level, assets, tune, song);
     }
 
     private static void announce(int number, Stage stage) {
