@@ -1,5 +1,7 @@
 # Agony — Java port
 
+*[Version française](README_fr.md)*
+
 A Java port of the Amiga game **Agony** (Art & Magic / Psygnosis, 1992), made from
 the original 68000 sources in `../sources/Agony`.
 
@@ -484,44 +486,3 @@ The engine is provided for compatibility, preservation, and educational purposes
 ### Credits
 
 Original game: Art & Magic, published by Psygnosis (1992). Java port: **Guillaume Monet**.
-
-<details>
-<summary>Version française</summary>
-
-### Mentions légales et données du jeu
-
-#### Implémentation indépendante du moteur
-
-Ce projet est une réimplémentation indépendante du moteur d'*Agony*, conçue pour reproduire le comportement du jeu d'origine sur les plateformes modernes.
-
-Le moteur a été développé à partir du code source d'origine (68000), issu de la publication de ses sources, par analyse technique et tests de compatibilité. Cette publication ne contient que du code ; elle n'est pas incluse dans ce dépôt.
-
-#### Fichiers du jeu d'origine
-
-Ce projet nécessite des fichiers du jeu d'origine, comme les trois disquettes du jeu (images ADF), pour fonctionner.
-
-**Les fichiers du jeu d'origine ne sont pas inclus dans ce projet.**
-
-Chaque utilisateur doit se procurer et fournir ses propres fichiers de jeu auprès d'une source légalement autorisée. Avant de télécharger ou d'utiliser ce moteur, l'utilisateur doit confirmer qu'il possède une copie du jeu d'origine obtenue légalement.
-
-Si elles manquent, le jeu télécharge les trois disquettes de l'édition disque dur depuis l'Amiga Museum et vérifie chacune contre l'empreinte SHA-256 de la copie connue ; un dossier local (`--adf=<dossier>`) l'emporte toujours. Les disquettes ne sont jamais modifiées.
-
-Eloane Studio n'héberge, ne distribue ni ne fournit de copies non autorisées de données de jeu protégées par le droit d'auteur.
-
-#### Droits d'auteur et marques
-
-Les noms, marques, graphismes, musiques et autres éléments propriétaires d'*Agony* restent la propriété de leurs titulaires respectifs (Art & Magic, Psygnosis).
-
-Ce projet est une implémentation indépendante et non officielle ; il n'est ni affilié, ni approuvé, ni soutenu par les développeurs ou les éditeurs du jeu d'origine.
-
-#### Préservation
-
-Ce projet a pour but de préserver le comportement technique et l'expérience de jeu des jeux vidéo classiques, tout en les rendant accessibles sur les systèmes modernes.
-
-Le moteur est fourni à des fins de compatibilité, de préservation et d'éducation.
-
-#### Crédits
-
-Jeu d'origine : Art & Magic, édité par Psygnosis (1992). Portage Java : **Guillaume Monet**.
-
-</details>
