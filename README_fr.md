@@ -61,7 +61,7 @@ Gradle (NetBeans et IntelliJ ouvrent le dossier comme un projet Gradle) :
 ./gradlew run --args="--level=2"
 ./gradlew run --args="--invincible --level=1"   # --level saute l'écran titre
 ./gradlew run --args="--no-title"
-./gradlew jar && java -jar build/libs/agony-java-1.0.0.jar
+./gradlew jar && java -jar build/libs/agony-java-*.jar
 ```
 
 ### Version distribuable

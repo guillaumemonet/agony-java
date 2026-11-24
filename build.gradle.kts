@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.artandmagic"
-version = "1.0.0"
+version = "1.0.1"
 description = "Java port of the Amiga game AGONY by Art & Magic (Psygnosis, 1992)."
 
 repositories {

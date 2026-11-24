@@ -60,7 +60,7 @@ Gradle (NetBeans and IntelliJ open the folder as a Gradle project):
 ./gradlew run --args="--level=2"
 ./gradlew run --args="--invincible --level=1"   # --level skips the title
 ./gradlew run --args="--no-title"
-./gradlew jar && java -jar build/libs/agony-java-1.0.0.jar
+./gradlew jar && java -jar build/libs/agony-java-*.jar
 ```
 
 ### Release
