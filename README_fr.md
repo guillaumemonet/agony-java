@@ -76,11 +76,6 @@ qu'elles sont là et vérifiées. `./gradlew jpackage -Ptype=msi` (ou `exe`, `de
 `dmg`…) construit plutôt un installateur, avec les outils dont jpackage a besoin
 pour ce type (WiX sous Windows).
 
-Le jeu empaqueté n'a pas de `../sources` à côté de lui : les deux modules de
-niveau conservés uniquement dans `AgonyDemoDosBackup` (la mer et la forêt) n'y
-sont donc pas ; ces deux niveaux jouent la musique de leur écran de chargement,
-qui se trouve sur les disquettes.
-
 Avec un simple JDK 17 ou plus récent, sans Gradle :
 
 ```
@@ -133,7 +128,8 @@ compilation :
 | `Ag_Copper_List.s` | `core/Palette`, `core/Screen` |
 | format des disquettes, PP20, disposition des blocs | `data/original/Adf`, `PowerPacker`, `AgonyBinary` |
 | données `INCBIN` vers les tables du moteur | `data/original/OriginalLevel` |
-| `Muzack/*`, `Sounds/Sound.bin` | `data/original/OriginalMusic`, `OriginalLevel.sounds` |
+| `Muzack/*.s` (le pilote audio de Jeroen Tel) | `audio/TelPlayer`, `data/original/LevelMusic` |
+| `Sounds/Sound.bin`, les modules Protracker | `OriginalLevel.sounds`, `data/original/OriginalMusic` |
 | `Ag_Pre_comp.s` masques des sprites | implicite : la couleur 0 sert de masque (`core/Sprite`) |
 | `Keyboard_Int` | `input/Joystick`, `AgonyGame.keyboard` |
 | Enregistrements `AWO_`, `AWS_`, `TRACK STRUCT`, `AF_` | `game/Alien`, `game/AlienBank`, `data/AttackWave`, `game/Track`, `game/AlienFire` |
@@ -324,9 +320,9 @@ Le son peut aussi être fourni en fichiers séparés, depuis un dossier `data` �
 du jeu ou un dossier donné en premier argument, ce qui se produit quand il n'y a
 pas de disquettes :
 
-* `music.mod` — la musique du niveau. `Ag_Pt_Player.s` est le lecteur Protracker
-  V1.1B, donc les modules de `Muzack/` sont des morceaux Protracker ordinaires ;
-  `audio/ModPlayer` les joue via l'émulation de Paula à quatre canaux.
+* `music.mod` — une musique de remplacement, jouée par `audio/ModPlayer`, le
+  lecteur Protracker V1.1B de `Ag_Pt_Player.s`, via l'émulation de Paula à
+  quatre canaux.
 * `sound0.raw` .. `sound3.raw` — les quatre effets de `Sounds/Sound.bin`, sous
   forme d'échantillons bruts signés sur huit bits, dans l'ordre où l'original les
   numérote : bonus ramassé, alien détruit, tir du sorcier, alien touché.
@@ -358,8 +354,20 @@ Convertis depuis les disquettes :
 * la police de la barre d'état et les messages ;
 * les quatre effets sonores de `Sounds/Sound.bin` ;
 * les modules Protracker : l'intro, la fin du jeu et une musique de chargement par
-  niveau, tous crédités à m.w et r.l, 1991. Cette édition ne garde aucun module de
-  jeu dans l'overlay du niveau, donc le portage joue la musique propre au niveau.
+  niveau, tous crédités à m.w et r.l, 1991, joués pendant que leur programme est
+  à l'écran ;
+* la musique des niveaux.  Ce n'est pas un module : `Agony_Parent_.s` inclut un
+  `Muzack/*.s` par niveau, le pilote audio Amiga de Jeroen Tel (The Sonic
+  Circle, 1991) avec la partition et les instruments IFF du niveau, appelé par
+  le balayage vertical sur les canaux 1 à 3, le canal 0 restant aux effets.  La
+  mer et le feu partagent un morceau, les marais et les plateaux un autre, la
+  forêt et les montagnes ont chacun le leur.  Seul `Muzack/Forest.s` est dans
+  les sources, et l'overlay de la forêt lui correspond octet pour octet ; les
+  autres morceaux sont lus dans leur overlay.  `data/original/LevelMusic`
+  trouve les tables du pilote grâce aux `lea` relatifs au PC de son code, à
+  partir de la table des périodes, et `audio/TelPlayer` transcrit le pilote
+  routine par routine — séquences, pas, glissés, vibrato, arpèges, attaque et
+  relâchement, et le fondu qu'`Exit` applique avant de quitter le niveau.
 
 * les graphismes des sorts, et les tables qui vont avec : l'arc le long duquel
   balancent les haches, les huit étapes de rotation de la boule de feu rotative,
